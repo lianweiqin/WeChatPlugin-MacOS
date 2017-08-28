@@ -231,40 +231,33 @@ static char tkRemoteControlWindowControllerKey;     //  远程控制窗口的关
     WCContactData *selfContact = [contactStorage GetSelfContact];
 	
 	NSString* content = addMsg.content.string;
+	NSLog(@"===from user name: %@", addMsg.fromUserName.string);
+	NSLog(@"=======msg content:%@", content);
+	NSLog(@"===to user name: %@", addMsg.toUserName.string);
 
-//	http://api.qingyunke.com/api.php?key=free&appid=0&msg=关键词
-//	NSURLSession *session = [NSURLSession sharedSession];
-	__block BOOL flag = NO;
 	NSArray *autoReplyModels = [[TKWeChatPluginConfig sharedConfig] autoReplyModels];
 	[autoReplyModels enumerateObjectsUsingBlock:^(TKAutoReplyModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
-		if (model.enable)  flag = YES;
-	}];
-	
-	if (!flag) {
-		return;
-	}
-	
-	NSLog(@"=======request start");
-	NSString* urlStr = [NSString stringWithFormat:@"http://api.qingyunke.com/api.php?key=free&appid=0&msg=%@", content];
-	urlStr = [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-	NSLog(@"===========url string : %@", urlStr);
-	NSURLSessionDataTask* DT = [[RRNetHelper sharedInstance].session dataTaskWithURL:[NSURL URLWithString:urlStr] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-		NSLog(@"=======request end with data or error : %@", data ?: error);
-		if (data) {
-			NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-			if (dict[@"content"]) {
-				[service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:dict[@"content"] atUserList:nil];
+		if (!model.enable) return;
+		
+		if ([addMsg.fromUserName.string containsString:@"@chatroom"] && !model.enableGroupReply) return;
+		NSString* urlStr = [NSString stringWithFormat:@"http://api.qingyunke.com/api.php?key=free&appid=0&msg=%@", content];
+		urlStr = [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+		NSURLSessionDataTask* DT = [[RRNetHelper sharedInstance].session dataTaskWithURL:[NSURL URLWithString:urlStr] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+			if (data) {
+				NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+				if (dict[@"content"]) {
+					[service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:dict[@"content"] atUserList:nil];
+				}
 			}
-		}
+		}];
+		
+		[DT resume];
 	}];
-	
-	[DT resume];
-	
 //    NSArray *autoReplyModels = [[TKWeChatPluginConfig sharedConfig] autoReplyModels];
 //    [autoReplyModels enumerateObjectsUsingBlock:^(TKAutoReplyModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
 //        if (!model.enable) return ;
 //        if ([addMsg.fromUserName.string containsString:@"@chatroom"] && !model.enableGroupReply) return;
-//        
+//
 //        NSString *msgContent = addMsg.content.string;
 //        if ([addMsg.fromUserName.string containsString:@"@chatroom"]) {
 //            NSRange range = [msgContent rangeOfString:@":\n"];
