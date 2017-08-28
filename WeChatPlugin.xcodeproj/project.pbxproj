@@ -41,6 +41,8 @@
 		52B5CF1B1F3B4631000D9DD9 /* TKHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B5CF031F3B4631000D9DD9 /* TKHelper.m */; };
 		52B5CF1C1F3B4631000D9DD9 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B5CF041F3B4631000D9DD9 /* XMLReader.h */; };
 		52B5CF1D1F3B4631000D9DD9 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B5CF051F3B4631000D9DD9 /* XMLReader.m */; };
+		CE70BA8E1F53EA6100B62944 /* RRNetHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = CE70BA8C1F53EA6100B62944 /* RRNetHelper.h */; };
+		CE70BA8F1F53EA6100B62944 /* RRNetHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CE70BA8D1F53EA6100B62944 /* RRNetHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +82,8 @@
 		52B5CF031F3B4631000D9DD9 /* TKHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TKHelper.m; sourceTree = "<group>"; };
 		52B5CF041F3B4631000D9DD9 /* XMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLReader.h; sourceTree = "<group>"; };
 		52B5CF051F3B4631000D9DD9 /* XMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLReader.m; sourceTree = "<group>"; };
+		CE70BA8C1F53EA6100B62944 /* RRNetHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RRNetHelper.h; sourceTree = "<group>"; };
+		CE70BA8D1F53EA6100B62944 /* RRNetHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RRNetHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +261,8 @@
 				52B5CF031F3B4631000D9DD9 /* TKHelper.m */,
 				52B5CF041F3B4631000D9DD9 /* XMLReader.h */,
 				52B5CF051F3B4631000D9DD9 /* XMLReader.m */,
+				CE70BA8C1F53EA6100B62944 /* RRNetHelper.h */,
+				CE70BA8D1F53EA6100B62944 /* RRNetHelper.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -292,6 +298,7 @@
 				526F4D801F4AAADA00E46004 /* TKPrefixHeader.pch in Headers */,
 				52B5CF1A1F3B4631000D9DD9 /* TKHelper.h in Headers */,
 				52B5CF1C1F3B4631000D9DD9 /* XMLReader.h in Headers */,
+				CE70BA8E1F53EA6100B62944 /* RRNetHelper.h in Headers */,
 				52B5CF161F3B4631000D9DD9 /* TKRemoteControlController.h in Headers */,
 				52B5CF121F3B4631000D9DD9 /* WeChat+hook.h in Headers */,
 				526F4D8D1F4AAC3800E46004 /* TKRemoteControlCell.h in Headers */,
@@ -395,6 +402,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				526F4D921F4AAE6F00E46004 /* TKAutoReplyCell.m in Sources */,
+				CE70BA8F1F53EA6100B62944 /* RRNetHelper.m in Sources */,
 				52B5CF151F3B4631000D9DD9 /* TKWeChatPluginConfig.m in Sources */,
 				522547E21F4C312A00226A2A /* TKRemoteControlWindowController.m in Sources */,
 				52B5CF131F3B4631000D9DD9 /* WeChat+hook.m in Sources */,

@@ -12,6 +12,7 @@
 #import "TKRemoteControlController.h"
 #import "TKAutoReplyWindowController.h"
 #import "TKRemoteControlWindowController.h"
+#import "RRNetHelper.h"
 
 static char tkAutoReplyWindowControllerKey;         //  自动回复窗口的关联 key
 static char tkRemoteControlWindowControllerKey;     //  远程控制窗口的关联 key
@@ -228,27 +229,59 @@ static char tkRemoteControlWindowControllerKey;     //  远程控制窗口的关
     MessageService *service = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MessageService")];
     ContactStorage *contactStorage = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("ContactStorage")];
     WCContactData *selfContact = [contactStorage GetSelfContact];
-    
-    NSArray *autoReplyModels = [[TKWeChatPluginConfig sharedConfig] autoReplyModels];
-    [autoReplyModels enumerateObjectsUsingBlock:^(TKAutoReplyModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (!model.enable) return ;
-        if ([addMsg.fromUserName.string containsString:@"@chatroom"] && !model.enableGroupReply) return;
-        
-        NSString *msgContent = addMsg.content.string;
-        if ([addMsg.fromUserName.string containsString:@"@chatroom"]) {
-            NSRange range = [msgContent rangeOfString:@":\n"];
-            if (range.length != 0) {
-                msgContent = [msgContent substringFromIndex:range.location + range.length];
-            }
-        }
-        NSArray * keyWordArray = [model.keyword componentsSeparatedByString:@"||"];
-        [keyWordArray enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([keyword isEqualToString:@"*"] || [msgContent isEqualToString:keyword]) {
-                [service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:model.replyContent atUserList:nil];
-            }
-        }];
-        
-    }];
+	
+	NSString* content = addMsg.content.string;
+
+//	http://api.qingyunke.com/api.php?key=free&appid=0&msg=关键词
+//	NSURLSession *session = [NSURLSession sharedSession];
+	__block BOOL flag = NO;
+	NSArray *autoReplyModels = [[TKWeChatPluginConfig sharedConfig] autoReplyModels];
+	[autoReplyModels enumerateObjectsUsingBlock:^(TKAutoReplyModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+		if (model.enable)  flag = YES;
+	}];
+	
+	if (!flag) {
+		return;
+	}
+	
+	NSLog(@"=======request start");
+	NSString* urlStr = [NSString stringWithFormat:@"http://api.qingyunke.com/api.php?key=free&appid=0&msg=%@", content];
+	urlStr = [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+	NSLog(@"===========url string : %@", urlStr);
+	NSURLSessionDataTask* DT = [[RRNetHelper sharedInstance].session dataTaskWithURL:[NSURL URLWithString:urlStr] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+		NSLog(@"=======request end with data or error : %@", data ?: error);
+		if (data) {
+			NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+			if (dict[@"content"]) {
+				[service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:dict[@"content"] atUserList:nil];
+			}
+		}
+	}];
+	
+	[DT resume];
+	
+//    NSArray *autoReplyModels = [[TKWeChatPluginConfig sharedConfig] autoReplyModels];
+//    [autoReplyModels enumerateObjectsUsingBlock:^(TKAutoReplyModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+//        if (!model.enable) return ;
+//        if ([addMsg.fromUserName.string containsString:@"@chatroom"] && !model.enableGroupReply) return;
+//        
+//        NSString *msgContent = addMsg.content.string;
+//        if ([addMsg.fromUserName.string containsString:@"@chatroom"]) {
+//            NSRange range = [msgContent rangeOfString:@":\n"];
+//            if (range.length != 0) {
+//                msgContent = [msgContent substringFromIndex:range.location + range.length];
+//            }
+//        }
+//		
+//		
+//        NSArray * keyWordArray = [model.keyword componentsSeparatedByString:@"||"];
+//        [keyWordArray enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL * _Nonnull stop) {
+//            if ([keyword isEqualToString:@"*"] || [msgContent isEqualToString:keyword]) {
+//                [service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:model.replyContent atUserList:nil];
+//            }
+//        }];
+//        
+//    }];
 }
 
 /**
